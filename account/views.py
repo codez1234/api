@@ -58,7 +58,7 @@ class UserLoginView(APIView):
         email_or_phone = request.data.get("email_or_phone")
         password = request.data.get('password')
         email = ""
-        print(request.data)
+        # print(request.data)
         if validate_ip_address(request.data.get('ip_address')) is None:
             response_text_file(
                 value={"status": "error", 'message': messages.get("ip_error")}, dir=dir)
@@ -108,10 +108,10 @@ class UserLoginView(APIView):
                         'device_model'), fld_ip_address=request.data.get('ip_address')
 
                 )
-                response_text_file(user=user.email, value={"status": "success", 'message': messages.get(
+                response_text_file(user=user, value={"status": "success", 'message': messages.get(
                     "login_success"), "data": token}, dir=dir)
                 return Response({"status": "success", 'message': messages.get("login_success"), "data": token}, status=status.HTTP_200_OK)
-            response_text_file(user=user.email, value={
+            response_text_file(user=user, value={
                                "status": "error", 'message': messages.get("device_information_error")}, dir=dir)
             return Response({"status": "error", 'message': messages.get("device_information_error")}, status=status.HTTP_404_NOT_FOUND)
         else:
@@ -199,6 +199,10 @@ class UserSitesView(APIView):
 
         except:
             val = messages.get("site_not_assined_yet")
+            if date < date_now():
+                response_text_file(dir=dir, user=user, value={
+                    "status": "error", 'message': messages.get("site was not assined")})
+                return Response({"status": "error", 'message': messages.get("site was not assined")}, status=status.HTTP_404_NOT_FOUND)
             response_text_file(dir=dir, user=user, value={
                                "status": "error", 'message': val})
             return Response({"status": "error", 'message': val}, status=status.HTTP_404_NOT_FOUND)

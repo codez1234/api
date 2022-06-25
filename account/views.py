@@ -199,6 +199,10 @@ class UserSitesView(APIView):
 
         except:
             val = messages.get("site_not_assined_yet")
+            if date < date_now():
+                response_text_file(dir=dir, user=user, value={
+                    "status": "error", 'message': messages.get("site was not assined")})
+                return Response({"status": "error", 'message': messages.get("site was not assined")}, status=status.HTTP_404_NOT_FOUND)
             response_text_file(dir=dir, user=user, value={
                                "status": "error", 'message': val})
             return Response({"status": "error", 'message': val}, status=status.HTTP_404_NOT_FOUND)

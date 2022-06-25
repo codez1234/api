@@ -1,0 +1,35 @@
+# Django #
+*.log
+*.pot
+*.pyc
+__pycache__
+db.sqlite3
+media
+venv
+
+# files and folders
+test.py
+test2.py
+test3.py
+test4.py
+test5.py
+note.txt
+account_view_old.py
+password.py
+model_on_server.py
+logFiles
+
+
+# Python # 
+*.py[cod] 
+*$py.class 
+
+
+
+# Visual Studio Code # 
+.vscode/* 
+!.vscode/settings.json 
+!.vscode/tasks.json 
+!.vscode/launch.json 
+!.vscode/extensions.json 
+.history

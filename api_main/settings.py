@@ -67,34 +67,34 @@ TEMPLATES = [
 WSGI_APPLICATION = 'api_main.wsgi.application'
 
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'OPTIONS': {
-            'sql_mode': 'traditional',
-        },
-        'NAME': 'omc',
-        'USER': 'skmd',
-        'PASSWORD': 'Skmd@9055',
-        'HOST': 'localhost',
-        'PORT': '3306',
-    }
-}
-
-
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.mysql',
 #         'OPTIONS': {
 #             'sql_mode': 'traditional',
 #         },
-#         'NAME': 'omc_test2',
-#         'USER': 'omc',
-#         'PASSWORD': 'Test1234567$$',
+#         'NAME': 'omc',
+#         'USER': 'skmd',
+#         'PASSWORD': 'Skmd@9055',
 #         'HOST': 'localhost',
 #         'PORT': '3306',
 #     }
 # }
+
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'OPTIONS': {
+            'sql_mode': 'traditional',
+        },
+        'NAME': 'omc_test2',
+        'USER': 'omc',
+        'PASSWORD': 'Test1234567$$',
+        'HOST': 'localhost',
+        'PORT': '3306',
+    }
+}
 
 # DATABASES = {
 #     'default': {

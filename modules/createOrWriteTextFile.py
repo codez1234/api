@@ -31,6 +31,15 @@ def parent_dir():
 
 
 def request_text_file(user=None, value=None, dir=None):
+    # print(f'user.email ================== {user.email}')
+    try:
+        user_details = {
+            "id": user.id,
+            "email": user.email,
+            "mobile": user.mobile
+        }
+    except:
+        user_details = None
     if dir:
         file_path = f'{parent_dir()}/logFiles/request/{dir}/{date_now()}.txt'
     else:
@@ -41,7 +50,7 @@ def request_text_file(user=None, value=None, dir=None):
             f.write("\n")
             f.write(time_now())
             f.write("\n")
-            f.write(f'user is {str(user)}')
+            f.write(f'user is {str(user_details)}')
             f.write("\n")
             f.write(str(value))
             f.write("\n")
@@ -51,6 +60,14 @@ def request_text_file(user=None, value=None, dir=None):
 
 
 def response_text_file(user=None, value=None, dir=None):
+    try:
+        user_details = {
+            "id": user.id,
+            "email": user.email,
+            "mobile": user.mobile
+        }
+    except:
+        user_details = None
     if dir:
         file_path = f'{parent_dir()}/logFiles/response/{dir}/{date_now()}.txt'
     else:
@@ -61,7 +78,7 @@ def response_text_file(user=None, value=None, dir=None):
             f.write("\n")
             f.write(time_now())
             f.write("\n")
-            f.write(f'user is {str(user)}')
+            f.write(f'user is {str(user_details)}')
             f.write("\n")
             f.write(str(value))
             f.write("\n")

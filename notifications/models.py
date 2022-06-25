@@ -101,12 +101,12 @@ class TblPushNotificationLog(models.Model):
 
     def getDate(self):
         suffix = {
-            "01": "st",
-            "02": "nd",
-            "03": "rd",
+            "1": "st",
+            "2": "nd",
+            "3": "rd",
         }
         notification_date = self.created_datetime.date()
-        suffix_key = notification_date.strftime("%d")
+        suffix_key = notification_date.strftime("%d")[-1]
         today = datetime.now().date()
         if notification_date == today:
             return "Today"

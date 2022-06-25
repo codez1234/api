@@ -562,13 +562,14 @@ class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, format=None):
-        dir = ""
+        dir = "logout"
         user = request.user
-        # device_info = request.data.get("device_model")
-        # # access_token = request.headers.get("Authorization").split(" ")[-1]
-        # access_token = request.headers.get("Authorization")[7:]
-        # obj = check_device(user.id, device_info, None)
-        '''
+        request_text_file(dir=dir, user=user, value=request.data)
+        device_info = request.data.get("device_model")
+        # access_token = request.headers.get("Authorization").split(" ")[-1]
+        access_token = request.headers.get("Authorization")[7:]
+        obj = check_device(user.id, device_info, None)
+
         if request.data.get("device_token"):
             user_firebase_token = TblUserFirebase.objects.filter(
                 user_id=user, device_info=device_info, firebase_id=request.data.get("device_token")).last()
@@ -576,12 +577,10 @@ class LogoutView(APIView):
                 user_firebase_token.is_send_push = False
                 user_firebase_token.save()
 
-        
         # insert into "TblLoginLog"
         login_log_insert, created = TblLoginLog.objects.get_or_create(fld_type="logout", fld_app="mobileapp", fld_user_id=user, fld_access_token=access_token,
                                                                       fld_device_information=device_info, fld_device=obj.get("device"), fld_ip_address=request.data.get("ip_address"))
 
-        '''
-        # response_text_file(dir=dir, user=request.user, value={
-        #     "status": "success", 'message': ""})
+        response_text_file(dir=dir, user=request.user, value={
+            "status": "success", 'message': "User Logged out successfully"})
         return Response({"status": "success", 'message': "User Logged out successfully"}, status=status.HTTP_200_OK)

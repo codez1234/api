@@ -543,8 +543,8 @@ class NotificationView(APIView):
 
 
 class VersionCheckView(APIView):
-    renderer_classes = [UserRenderer]
-    permission_classes = [IsAuthenticated]
+    # renderer_classes = [UserRenderer]
+    # permission_classes = [IsAuthenticated]
 
     def post(self, request, format=None):
         dir = "version_check"

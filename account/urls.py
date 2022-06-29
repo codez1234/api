@@ -18,7 +18,9 @@ urlpatterns = [
     path('notifications', NotificationView.as_view(),
          name='NotificationView'),
     path('version_check', VersionCheckView.as_view(), name='version_check'),
-    path('logout', LogoutView.as_view(), name='logout')
-    #     path('TestView', TestView.as_view(),
-    #          name='TestView'),
+    path('logout', LogoutView.as_view(), name='logout'),
+    path('user_bulk_claim', UserClaimReimbusmentsBulkView.as_view(),
+         name='user_bulk_claim'),
+    path('bulk_claim', ClaimReimbusmentsBulkView.as_view(),
+         name='bulk_claim'),
 ]

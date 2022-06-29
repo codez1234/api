@@ -85,6 +85,7 @@ class TblAttendanceAdmin(admin.ModelAdmin):
                     "fld_longitude", "fld_date", "fld_time", "fld_attendance_status"]
     search_fields = ["fld_user_id__id",
                      "fld_user_id__email", "fld_date", "fld_time"]
+    ordering = ('fld_ai_id', 'fld_date')
     # list_filter = ['status', 'is_ordered']
     # pass
 
@@ -96,15 +97,17 @@ class TblAttendanceLogAdmin(admin.ModelAdmin):
     #                  "user_id__email", "visit_id", "site_id__fld_ai_id", "site_id__fld_site_omc_id", "site_id__fld_site_name"]
     search_fields = ["user_id__id",
                      "user_id__email", "visit_id", "site_id__id", "site_id__site_name", "site_id__site_omc_id"]
+    ordering = ('id', 'date')
     # list_filter = ['status', 'is_ordered']
     # pass
 
 
 class TblUserReimbursementsAdmin(admin.ModelAdmin):
     list_display = ["id", "user_id", "distance",
-                    "visit_id", "status"]
+                    "visit_id", "status", "amount", "date"]
     search_fields = ["id", "user_id__email", "distance",
                      "visit_id", "status", "user_id__id"]
+    ordering = ('date', 'id')
     # pass
 
 
@@ -118,12 +121,14 @@ class TblSitesAdmin(admin.ModelAdmin):
                     "site_name", "state", "district", "latitude", "longitude"]
     search_fields = ["id", "site_omc_id",
                      "site_type", "site_name", "state", "district"]
+
     # pass
 
 
 class TblUserSitesAdmin(admin.ModelAdmin):
     list_display = ["id", "user_id", "assigned_date"]
     search_fields = ["id", "user_id__email"]
+    ordering = ('id', 'assigned_date')
     # pass
 
 

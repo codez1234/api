@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from http.client import OK
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
@@ -25,6 +26,7 @@ from notifications.send_notification import send_push_notification
 from configuration.configuration import configurations
 from appVersion.models import Version
 from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken, OutstandingToken
+from django.db.models import Sum
 
 # ++++++++++++++++++++++++++++++++++++++++ #
 
@@ -588,3 +590,132 @@ class LogoutView(APIView):
         response_text_file(dir=dir, user=request.user, value={
             "status": "success", 'message': "User Logged out successfully"})
         return Response({"status": "success", 'message': "User Logged out successfully"}, status=status.HTTP_200_OK)
+
+
+class UserClaimReimbusmentsBulkView(APIView):
+    renderer_classes = [UserRenderer]
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, format=None):
+        dir = "user_bulk_claim"
+        user = request.user
+        request_text_file(dir=dir, user=user, value=request.data)
+        time_duration = request.data.get("time_duration")
+        current_date = datetime.now()
+
+        if time_duration == "week":
+            try:
+                d_start = current_date - timedelta(days=7)  # 7
+                d_end = current_date-timedelta(days=1)
+                reimbursement = TblUserReimbursements.objects.filter(
+                    user_id=user, is_active=True, is_delete=False, date__range=[d_start, d_end],
+                    status="pending")
+                total_distance_and_amount = reimbursement.aggregate(
+                    Sum('distance'), Sum('amount'))
+                update_reimbursements_status = reimbursement.update(
+                    status="requested")
+            except:
+                response_text_file(dir=dir, user=user, value={
+                                   "status": "error", 'message': ""})
+                return Response({"status": "error", 'message': ""}, status=status.HTTP_404_NOT_FOUND)
+
+        elif time_duration == "month":
+            # Sample.objects.filter(date__year='2020', date__month='01')
+            try:
+                d_start = f'{str(current_date.year)}-{str(current_date.month)}-01'
+                d_end = current_date-timedelta(days=1)
+
+                if current_date.day == 1:
+                    d_start = f'{str(current_date.year)}-{str(current_date.month - 1)}-01'
+                    d_end = current_date-timedelta(days=1)
+                # print(d_start, d_end)
+                reimbursement = TblUserReimbursements.objects.filter(
+                    user_id=user, is_active=True, is_delete=False, date__range=[d_start, d_end],
+                    status="pending")
+                total_distance_and_amount = reimbursement.aggregate(
+                    Sum('distance'), Sum('amount'))
+                update_reimbursements_status = reimbursement.update(
+                    status="requested")
+
+            except:
+                response_text_file(dir=dir, user=user, value={
+                                   "status": "error", 'message': ""})
+                return Response({"status": "error", 'message': ""}, status=status.HTTP_404_NOT_FOUND)
+
+        else:
+            error_message = messages.get(
+                "bulk claim error for wrong time duration")
+            response_text_file(dir=dir, user=user, value={
+                "status": "error", 'message': error_message})
+            return Response({"status": "error", 'message': error_message}, status=status.HTTP_400_BAD_REQUEST)
+        # {'distance__sum': 3650.447564666481, 'amount__sum': 28157.37077599777}
+        try:
+            data = {
+                "total_distance": int(total_distance_and_amount.get("distance__sum")),
+                "total_amount": int(total_distance_and_amount.get("amount__sum"))
+            }
+        except:
+            data = {
+                "total_distance": 0,
+                "total_amount": 0
+            }
+        response_text_file(dir=dir, user=user, value={
+                           "status": "success", 'message': "", "data": data})
+        return Response({"status": "success", 'message': "", "data": data}, status=status.HTTP_200_OK)
+
+
+class ClaimReimbusmentsBulkView(APIView):
+    renderer_classes = [UserRenderer]
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, format=None):
+        dir = "bulk_claim"
+        user = request.user
+        request_text_file(dir=dir, user=user, value=request.data)
+        time_duration = request.data.get("time_duration")
+        current_date = datetime.now()
+
+        if time_duration == "week":
+            try:
+                d_start = current_date - timedelta(days=7)  # 7
+                d_end = current_date-timedelta(days=1)
+                reimbursement = TblUserReimbursements.objects.filter(
+                    is_active=True, is_delete=False, date__range=[d_start, d_end],
+                    status="pending")
+                update_reimbursements_status = reimbursement.update(
+                    status="requested")
+            except:
+                response_text_file(dir=dir, user=user, value={
+                                   "status": "error", 'message': ""})
+                return Response({"status": "error", 'message': ""}, status=status.HTTP_404_NOT_FOUND)
+
+        elif time_duration == "month":
+            # Sample.objects.filter(date__year='2020', date__month='01')
+            try:
+                d_start = f'{str(current_date.year)}-{str(current_date.month)}-01'
+                d_end = current_date-timedelta(days=1)
+
+                if current_date.day == 1:
+                    d_start = f'{str(current_date.year)}-{str(current_date.month - 1)}-01'
+                    d_end = current_date-timedelta(days=1)
+                # print(d_start, d_end)
+                reimbursement = TblUserReimbursements.objects.filter(
+                    is_active=True, is_delete=False, date__range=[d_start, d_end],
+                    status="pending")  # pending
+                update_reimbursements_status = reimbursement.update(
+                    status="requested")  # requested
+
+            except:
+                response_text_file(dir=dir, user=user, value={
+                                   "status": "error", 'message': ""})
+                return Response({"status": "error", 'message': ""}, status=status.HTTP_404_NOT_FOUND)
+
+        else:
+            error_message = messages.get(
+                "bulk claim error for wrong time duration")
+            response_text_file(dir=dir, user=user, value={
+                "status": "error", 'message': error_message})
+            return Response({"status": "error", 'message': error_message}, status=status.HTTP_400_BAD_REQUEST)
+        response_text_file(dir=dir, user=user, value={
+                           "status": "success", 'message': ""})
+        return Response({"status": "success", 'message': ""}, status=status.HTTP_200_OK)

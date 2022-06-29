@@ -17,5 +17,6 @@ messages = {
     "password_length": "Your password must contain at least 10 characters.",
     "IMEI_error": "Please use a valid IMEI number.",
     "app version check": "Please update the app",
+    "bulk claim error for wrong time duration": "Please use a valid time duration"
 
 }

@@ -22,6 +22,7 @@ class TblUserFirebase(models.Model):
 
     def __str__(self) -> str:
         return f'{self.user_id.email} on {str(self.created_datetime)}'
+        # return str(self.id)
 
     class Meta:
         managed = True
@@ -105,7 +106,8 @@ class TblPushNotificationLog(models.Model):
             "2": "nd",
             "3": "rd",
         }
-        notification_date = self.created_datetime.date()
+        # notification_date = self.created_datetime.date()
+        notification_date = self.datetime.date()
         suffix_key = notification_date.strftime("%d")[-1]
         today = datetime.now().date()
         if notification_date == today:
@@ -119,7 +121,8 @@ class TblPushNotificationLog(models.Model):
 
     def getTime(self):
         # return self.created_datetime.time().strftime("%H:%M") # in 24hr format
-        return self.created_datetime.time().strftime("%I:%M %p")
+        # return self.created_datetime.time().strftime("%I:%M %p")
+        return self.datetime.time().strftime("%I:%M %p")
 
     def __str__(self) -> str:
         return self.user_id.email

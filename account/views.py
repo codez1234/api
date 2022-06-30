@@ -534,8 +534,28 @@ class NotificationView(APIView):
                 "number of days for list notification api data")
         except:
             number_of_days = 7
-        obj = TblPushNotificationLog.objects.filter(
-            user_id=user, is_success=True, is_active=True, is_delete=False, created_datetime__gte=datetime.now()-timedelta(days=number_of_days)).order_by('-id')
+
+        # datetime_range = datetime.now()-timedelta(days=number_of_days)
+
+        '''
+        SELECT ai_id,sms_case,sms_content,sms_response,sent_to,`status`,datetime_timestamp
+        FROM tbl_sms_log
+        GROUP BY DATE(datetime_timestamp),HOUR(datetime_timestamp),MINUTE(datetime_timestamp),SECOND(datetime_timestamp)
+        '''
+        '''
+        SELECT ai_id,sms_case,sms_content,sms_response,sent_to,`status`,datetime_timestamp
+        FROM tbl_sms_log
+        GROUP BY datetime_timestamp
+        '''
+        # obj = TblPushNotificationLog.objects.filter(
+        #     user_id=user, is_success=True, is_active=True, is_delete=False, datetime__gte=datetime_range).order_by('-id')
+        # print(obj)
+        # print(len(obj))
+        # fld_is_success=1, fld_is_active=1, fld_is_delete=0,
+        obj = TblPushNotificationLog.objects.raw(
+            f'SELECT * FROM tbl_push_notification_log WHERE fld_user_id ={user.id} AND fld_is_success=1 AND fld_is_active=1 AND fld_is_delete=0 AND fld_datetime >= DATE(NOW() - INTERVAL {number_of_days} DAY) GROUP BY fld_datetime ORDER BY fld_datetime DESC')  # GROUP BY fld_datetime
+
+        print(len(obj))
 
         serializer = TblPushNotificationLogSerializer(obj, many=True)
         response_text_file(dir=dir, user=user, value={

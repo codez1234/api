@@ -57,6 +57,7 @@ def send_push_notification(user_id=None, notification_type="", site=" "):
         except:
             notification_data = None
         if users and notification_data:
+            date_and_time = datetime.now()
             for i in users:
                 response_var = send_notification(
                     deviceToken=i.firebase_id, title=title, body=body)
@@ -67,7 +68,7 @@ def send_push_notification(user_id=None, notification_type="", site=" "):
                     is_success = True
                 push_log = TblPushNotificationLog.objects.create(user_id=user_id, notification_type_id=notification_data,
                                                                  user_firebase=i, firebase_response=response_var.json(), notification_title=title,  status_code=status_code, is_success=is_success,
-                                                                 datetime=datetime.now())
+                                                                 datetime=date_and_time)
                 if body:
                     push_log.notification_description = body
                 else:

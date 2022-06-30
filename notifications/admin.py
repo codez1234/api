@@ -5,8 +5,7 @@ from .models import *
 
 
 class TblUserFirebaseAdmin(admin.ModelAdmin):
-    list_display = ["id", "user_id", "is_send_push",
-                    "created_datetime"]
+    list_display = ["id", "user_id", "is_send_push", "created_datetime"]
     search_fields = ["id", "user_id__email", "user_id__id", "firebase_id"]
 
 
@@ -23,7 +22,7 @@ admin.site.register(TblNotificationConfig, TblNotificationConfigAdmin)
 
 
 class TblPushNotificationLogAdmin(admin.ModelAdmin):
-    list_display = ["id", "notification_type_id", "user_id", "status_code",
+    list_display = ["id", "notification_type_id", "user_id", "status_code", "datetime",
                     "created_datetime"]
     search_fields = ["id",
                      "user_id__email", "status_code"]

@@ -33,3 +33,9 @@ logFiles
 !.vscode/launch.json 
 !.vscode/extensions.json 
 .history
+
+
+# on server
+
+server.crt
+server.key

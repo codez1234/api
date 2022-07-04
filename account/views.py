@@ -571,12 +571,20 @@ class VersionCheckView(APIView):
     def post(self, request, format=None):
         dir = "version_check"
         request_text_file(dir=dir, user=request.user, value=request.data)
-        current_app = Version.objects.filter(
-            is_active=True, is_delete=False).last()
-        if request.data.get("version") == current_app.version_name and request.data.get("type") == current_app.type:
-            response_text_file(dir=dir, user=request.user, value={
-                               "status": "success", 'message': ""})
-            return Response({"status": "success", 'message': ""}, status=status.HTTP_200_OK)
+        type = request.data.get("type")
+        version = request.data.get("version")
+        device = request.data.get("device")
+        if type in ["android", "iso"]:
+            current_app = Version.objects.filter(type=type,
+                                                 is_active=True, is_delete=False).last()
+            if version == current_app.version_name:
+                image_url = ""
+                if type == "android" and device.lower() in ["vivo", "oppo"]:
+                    image_url = current_app.locationaccess_image
+                data = {"image_url": image_url}
+                response_text_file(dir=dir, user=request.user, value={
+                    "status": "success", 'message': "", "data": data})
+                return Response({"status": "success", 'message': "", "data": data}, status=status.HTTP_200_OK)
 
         response_text_file(dir=dir, user=request.user, value={
             "status": "error", 'message': messages.get("app version check")})

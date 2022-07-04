@@ -13,6 +13,10 @@ class Version(models.Model):
         blank=True, null=True, max_length=10, db_column="fld_version_name")
     type = EnumField(blank=True, null=True, choices=DeviceTypeChoice.choices,
                      default="android", db_column="fld_type")
+    image = models.ImageField("images", blank=True,
+                              null=True, db_column="fld_image")
+    locationaccess_image = FixedCharField(
+        blank=True, null=True, max_length=50, db_column="fld_locationaccess_image")
     is_active = models.BooleanField(
         default=True, db_column="fld_is_active")
     is_delete = models.BooleanField(

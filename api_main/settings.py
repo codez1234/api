@@ -2,6 +2,7 @@
 from pathlib import Path
 from datetime import timedelta
 import os
+
 # from django.contrib.auth.hashers import make_password, check_password
 
 # print(f'password encryption ==  {make_password("skmd")}')
@@ -158,6 +159,10 @@ STATIC_URL = '/static/'
 # Location of static files
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'), ]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'  # 'http://myhost:port/media/'
 
 
 # our costum design for user/superuser

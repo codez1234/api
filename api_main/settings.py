@@ -34,7 +34,8 @@ INSTALLED_APPS = [
     "database",
     "notifications",
     "appVersion",
-    "sslserver"
+    "sslserver",
+    "security_log"
 ]
 
 MIDDLEWARE = [

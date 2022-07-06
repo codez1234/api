@@ -18,6 +18,7 @@ def send_notification(deviceToken=None, title=None, body=None, icon=None):
     body = {
         'notification': {'title': title,
                          'body': body,
+                         #  'icon': icon
                          },
         'to':
         deviceToken,
@@ -42,8 +43,8 @@ def send_push_notification(user_id=None, notification_type="", site=" "):
             user_id=user_id, is_send_push=True)
 
         try:
-            notification_data = TblNotificationConfig.objects.get(
-                notification_type=notification_type)
+            notification_data = TblNotificationConfig.objects.filter(
+                notification_type=notification_type).last()
             title = notification_data.notification_title
             body = notification_data.notification_body
             if notification_type == "site reached":
@@ -83,5 +84,6 @@ def send_push_notification(user_id=None, notification_type="", site=" "):
     return return_value
 
 
-# x = send_notification(deviceToken="dXLMNbsuQDCjqOasvsD9SJ:APA91bF-onqJ-ZAloh-Xm4P14SiSMbM4Zx_UjZO4gEd76DDrvj_s6NOUtAmxwH11A3vbcDu5A6g7rUxAmU7qbnc7Hcc_5n8g9SbAqCm3DCm5eunLpFpVRojHcwADkNdv9EqGaNr6PdiZ", title="None", body="None", icon=None)
+# x = send_notification(deviceToken="c1eWN81OQYOsI0ROZRvFn1:APA91bExR7uyRiwDrtZT_76ZvrE89CPw9B0FK9ZF6xbsMFPKS3LFtUkvc8Z6s-QXfNHxJhjzJgcf9wrNPhqM12tbAE_lwz7itJnQPWJod8HkTsRHiJvgDAj9fYvwm_U8jbiHipbQWDfi",
+#                       title="None", body="U+1F600", icon="U+1F600")
 # print(x)

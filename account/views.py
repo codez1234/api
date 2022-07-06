@@ -585,10 +585,13 @@ class VersionCheckView(APIView):
                 image_url = ""
                 # if type == "android" and device.lower() in ["vivo", "oppo"]:
                 #     image_url = current_app.locationaccess_image
-                data = {"image_url": image_url}
+                # data = {"image_url": image_url}
+                # response_text_file(dir=dir, user=request.user, value={
+                #     "status": "success", 'message': "", "data": data})
+                # return Response({"status": "success", 'message': "", "data": data}, status=status.HTTP_200_OK)
                 response_text_file(dir=dir, user=request.user, value={
-                    "status": "success", 'message': "", "data": data})
-                return Response({"status": "success", 'message': "", "data": data}, status=status.HTTP_200_OK)
+                    "status": "success", 'message': ""})
+                return Response({"status": "success", 'message': ""}, status=status.HTTP_200_OK)
 
         response_text_file(dir=dir, user=request.user, value={
             "status": "error", 'message': messages.get("app version check")})
@@ -783,7 +786,7 @@ class CheckDateTime(APIView):
         return Response({"status": "error", 'message': ""}, status=status.HTTP_400_BAD_REQUEST)
 '''
 
-# ================= security ================== #
+# =========================== security ============================== #
 '''
 cases = [disable gps, change datetime, offline after checkin]
 '''

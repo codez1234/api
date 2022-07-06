@@ -23,4 +23,6 @@ urlpatterns = [
          name='user_bulk_claim'),
     path('bulk_claim', ClaimReimbusmentsBulkView.as_view(),
          name='bulk_claim'),
+    #     path('check_date_time', CheckDateTime.as_view(),
+    #          name='check_date_time'),
 ]

@@ -11,7 +11,7 @@ from django.contrib.auth import authenticate
 from account.renderers import UserRenderer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
-from modules.createOrWriteTextFile import request_text_file, response_text_file, date_now, get_visit_id_date
+from modules.createOrWriteTextFile import request_text_file, response_text_file, date_now, get_visit_id_date, get_current_time
 from modules.errors import messages
 from modules.deviceCheck import check_device
 from modules.ipAddress import validate_ip_address
@@ -747,3 +747,33 @@ class ClaimReimbusmentsBulkView(APIView):
         response_text_file(dir=dir, user=user, value={
                            "status": "success", 'message': ""})
         return Response({"status": "success", 'message': ""}, status=status.HTTP_200_OK)
+
+
+# =========================== upgrade =============================== #
+'''
+class CheckDateTime(APIView):
+    renderer_classes = [UserRenderer]
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, format=None):
+        dir = ""
+        if request.data.get("date") == date_now():  # may cause some problems.
+            current_time = get_current_time().split(":")
+            try:
+                phone_time = request.data.get("time").split(":")
+            except:
+                phone_time = None
+            if phone_time:
+                if int(phone_time[0]) - int(current_time[0]) == 0 and int(phone_time[1]) - int(current_time[1]) in range(-5, 5):
+                    return Response({"status": "success", 'message': ""}, status=status.HTTP_200_OK)
+
+                elif int(phone_time[0]) - int(current_time[0]) == 1 or int(phone_time[0]) - int(current_time[0]) == -1:
+                    if int(phone_time[1]) in range(55, 60) and int(current_time[1]) in range(0, 5) or int(phone_time[1]) in range(0, 5) and int(current_time[1]) in range(55, 60):
+                        return Response({"status": "success", 'message': "yes its work"}, status=status.HTTP_400_BAD_REQUEST)
+
+            return Response({"status": "error", 'message': ""}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({"status": "error", 'message': ""}, status=status.HTTP_400_BAD_REQUEST)
+'''
+
+# ================= security ================== #

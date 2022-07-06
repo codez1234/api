@@ -11,7 +11,7 @@ from django.contrib.auth import authenticate
 from account.renderers import UserRenderer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
-from modules.createOrWriteTextFile import request_text_file, response_text_file, date_now, get_visit_id_date
+from modules.createOrWriteTextFile import request_text_file, response_text_file, date_now, get_visit_id_date, get_current_time
 from modules.errors import messages
 from modules.deviceCheck import check_device
 from modules.ipAddress import validate_ip_address
@@ -27,6 +27,10 @@ from configuration.configuration import configurations
 from appVersion.models import Version
 from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken, OutstandingToken
 from django.db.models import Sum
+from rest_framework.authentication import BasicAuthentication
+from rest_framework.permissions import AllowAny, IsAdminUser
+from security_log.models import TblSecurityLog
+
 
 # ++++++++++++++++++++++++++++++++++++++++ #
 
@@ -565,7 +569,7 @@ class NotificationView(APIView):
 
 
 class VersionCheckView(APIView):
-    # renderer_classes = [UserRenderer]
+    renderer_classes = [UserRenderer]
     # permission_classes = [IsAuthenticated]
 
     def post(self, request, format=None):
@@ -579,12 +583,15 @@ class VersionCheckView(APIView):
                                                  is_active=True, is_delete=False).last()
             if version == current_app.version_name:
                 image_url = ""
-                if type == "android" and device.lower() in ["vivo", "oppo"]:
-                    image_url = current_app.locationaccess_image
-                data = {"image_url": image_url}
+                # if type == "android" and device.lower() in ["vivo", "oppo"]:
+                #     image_url = current_app.locationaccess_image
+                # data = {"image_url": image_url}
+                # response_text_file(dir=dir, user=request.user, value={
+                #     "status": "success", 'message': "", "data": data})
+                # return Response({"status": "success", 'message': "", "data": data}, status=status.HTTP_200_OK)
                 response_text_file(dir=dir, user=request.user, value={
-                    "status": "success", 'message': "", "data": data})
-                return Response({"status": "success", 'message': "", "data": data}, status=status.HTTP_200_OK)
+                    "status": "success", 'message': ""})
+                return Response({"status": "success", 'message': ""}, status=status.HTTP_200_OK)
 
         response_text_file(dir=dir, user=request.user, value={
             "status": "error", 'message': messages.get("app version check")})
@@ -688,13 +695,15 @@ class UserClaimReimbusmentsBulkView(APIView):
                 "total_amount": 0
             }
         response_text_file(dir=dir, user=user, value={
-                           "status": "success", 'message': "", "data": data})
+                           "status": "success", 'message': "", "data": data, "tbl_user_reimbursements_ids": [i.id for i in reimbursement]})
         return Response({"status": "success", 'message': "", "data": data}, status=status.HTTP_200_OK)
 
 
 class ClaimReimbusmentsBulkView(APIView):
     renderer_classes = [UserRenderer]
-    permission_classes = [IsAuthenticated]
+    # authentication_classes = [BasicAuthentication]
+    # permission_classes = [IsAdminUser]
+    # permission_classes = [IsAuthenticated]
 
     def post(self, request, format=None):
         dir = "bulk_claim"
@@ -730,6 +739,7 @@ class ClaimReimbusmentsBulkView(APIView):
                 reimbursement = TblUserReimbursements.objects.filter(
                     is_active=True, is_delete=False, date__range=[d_start, d_end],
                     status="pending")  # pending
+
                 update_reimbursements_status = reimbursement.update(
                     status="requested")  # requested
 
@@ -745,5 +755,70 @@ class ClaimReimbusmentsBulkView(APIView):
                 "status": "error", 'message': error_message})
             return Response({"status": "error", 'message': error_message}, status=status.HTTP_400_BAD_REQUEST)
         response_text_file(dir=dir, user=user, value={
-                           "status": "success", 'message': ""})
+                           "status": "success", 'message': "", "tbl_user_reimbursements_ids": [i.id for i in reimbursement]})
         return Response({"status": "success", 'message': ""}, status=status.HTTP_200_OK)
+
+
+# =========================== upgrade =============================== #
+'''
+class CheckDateTime(APIView):
+    renderer_classes = [UserRenderer]
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, format=None):
+        dir = ""
+        if request.data.get("date") == date_now():  # may cause some problems.
+            current_time = get_current_time().split(":")
+            try:
+                phone_time = request.data.get("time").split(":")
+            except:
+                phone_time = None
+            if phone_time:
+                if int(phone_time[0]) - int(current_time[0]) == 0 and int(phone_time[1]) - int(current_time[1]) in range(-5, 5):
+                    return Response({"status": "success", 'message': ""}, status=status.HTTP_200_OK)
+
+                elif int(phone_time[0]) - int(current_time[0]) == 1 or int(phone_time[0]) - int(current_time[0]) == -1:
+                    if int(phone_time[1]) in range(55, 60) and int(current_time[1]) in range(0, 5) or int(phone_time[1]) in range(0, 5) and int(current_time[1]) in range(55, 60):
+                        return Response({"status": "success", 'message': "yes its work"}, status=status.HTTP_400_BAD_REQUEST)
+
+            return Response({"status": "error", 'message': ""}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({"status": "error", 'message': ""}, status=status.HTTP_400_BAD_REQUEST)
+'''
+
+# =========================== security ============================== #
+'''
+cases = [disable gps, change datetime, offline after checkin]
+'''
+
+
+class Security(APIView):
+    renderer_classes = [UserRenderer]
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, format=None):
+        dir = ""
+        # must send "device_info", "ip_address"
+        user = request.user
+        request_text_file(dir=dir, user=user, value=request.data)
+        alert_type = request.data.get("alert_type")
+        device_info = request.data.get("device_info")
+        ip_address = request.data.get("ip_address")
+
+        if validate_ip_address(ip_address) is None:
+            response_text_file(dir=dir,
+                               user=user, value={"status": "error", 'message': messages.get("ip_error")})
+            return Response({"status": "error", 'message': messages.get("ip_error")}, status=status.HTTP_400_BAD_REQUEST)
+
+        if alert_type in ["offline", "disable tracking", "changes datetime"]:
+            TblSecurityLog.objects.create(
+                user_id=user, log_type=alert_type, device_info=device_info, ip_address=ip_address)
+            send_push_notification(user_id=user, notification_type=alert_type)
+
+            response_text_file(dir=dir,
+                               user=user, value={"status": "success", 'message': ""})
+            return Response({"status": "success", 'message': ""}, status=status.HTTP_200_OK)
+
+        response_text_file(dir=dir,
+                           user=user, value={"status": "error", 'message': ""})
+        return Response({"status": "error", 'message': ""}, status=status.HTTP_400_BAD_REQUEST)

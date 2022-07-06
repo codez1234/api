@@ -34,7 +34,8 @@ INSTALLED_APPS = [
     "database",
     "notifications",
     "appVersion",
-    "sslserver"
+    "sslserver",
+    "security_log"
 ]
 
 MIDDLEWARE = [
@@ -69,41 +70,50 @@ TEMPLATES = [
 WSGI_APPLICATION = 'api_main.wsgi.application'
 
 
+if 'RDS_DB_NAME' in os.environ:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'OPTIONS': {
+                'sql_mode': 'traditional',
+            },
+            'NAME': os.environ['RDS_DB_NAME'],
+            'USER': os.environ['RDS_USERNAME'],
+            'PASSWORD': os.environ['RDS_PASSWORD'],
+            'HOST': os.environ['RDS_HOSTNAME'],
+            'PORT': os.environ['RDS_PORT'],
+        }
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'OPTIONS': {
+                'sql_mode': 'traditional',
+            },
+            'NAME': 'omc',
+            'USER': 'skmd',
+            'PASSWORD': 'Skmd@9055',
+            'HOST': 'localhost',
+            'PORT': '3306',
+        }
+    }
+
+
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.mysql',
 #         'OPTIONS': {
 #             'sql_mode': 'traditional',
 #         },
-#         'NAME': 'omc',
-#         'USER': 'skmd',
-#         'PASSWORD': 'Skmd@9055',
+#         'NAME': 'omc_test2',
+#         'USER': 'omc',
+#         'PASSWORD': 'Test1234567$$',
 #         'HOST': 'localhost',
 #         'PORT': '3306',
 #     }
 # }
 
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'OPTIONS': {
-            'sql_mode': 'traditional',
-        },
-        'NAME': 'omc_test2',
-        'USER': 'omc',
-        'PASSWORD': 'Test1234567$$',
-        'HOST': 'localhost',
-        'PORT': '3306',
-    }
-}
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db2.sqlite3',
-#     }
-# }
 
 # JWT Configuration
 REST_FRAMEWORK = {

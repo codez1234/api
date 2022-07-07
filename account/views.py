@@ -409,6 +409,9 @@ class UserTblAttendanceView(APIView):
         response_text_file(dir=dir, user=user_obj, value={
             "status": "success", 'message': messages.get("data_created")})
         return Response({"status": "success", 'message': messages.get("data_created")}, status=status.HTTP_200_OK)
+        # response_text_file(dir=dir, user=user_obj, value={"status": "success", 'message': messages.get(
+        #     "data_created"), "data": {'auto_check_out': data["auto_check_out"]}})
+        # return Response({"status": "success", 'message': messages.get("data_created"), "data": {'auto_check_out': data["auto_check_out"]}}, status=status.HTTP_200_OK)
 
 
 class AttendanceLogView(APIView):
@@ -797,7 +800,7 @@ class Security(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, format=None):
-        dir = ""
+        dir = "security_log"
         # must send "device_info", "ip_address"
         user = request.user
         request_text_file(dir=dir, user=user, value=request.data)

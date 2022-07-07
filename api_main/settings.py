@@ -70,7 +70,7 @@ WSGI_APPLICATION = 'api_main.wsgi.application'
 
 
 if 'RDS_DB_NAME' in os.environ:
-    DEBUG = os.environ['DEBUG']
+    DEBUG = False
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',

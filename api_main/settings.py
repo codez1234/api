@@ -14,7 +14,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
-DEBUG = True
 
 ALLOWED_HOSTS = ["49.37.36.156", "192.168.1.128",
                  "127.0.0.1", "etr.omcpower.co.in"]
@@ -71,6 +70,7 @@ WSGI_APPLICATION = 'api_main.wsgi.application'
 
 
 if 'RDS_DB_NAME' in os.environ:
+    DEBUG = os.environ['DEBUG']
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
@@ -84,7 +84,18 @@ if 'RDS_DB_NAME' in os.environ:
             'PORT': os.environ['RDS_PORT'],
         }
     }
+    # HTTPS settings
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_SSL_REDIRECT = True
+
+    # HSTS (HTTP strict transport security) settings
+    SECURE_HSTS_SECONDS = 31536000  # 1 year
+    SECURE_HSTS_PRELOAD = True
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+
 else:
+    DEBUG = True
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
@@ -200,7 +211,7 @@ SIMPLE_JWT = {
 
 PASSWORD_RESET_TIMEOUT = 900          # 900 Sec = 15 Min
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-]
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:3000",
+#     "http://127.0.0.1:3000",
+# ]

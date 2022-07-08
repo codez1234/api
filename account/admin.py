@@ -36,4 +36,11 @@ admin.site.register(User, UserModelAdmin)
 # admin.site.register(User)
 
 
-admin.site.register(TblLoginLog)
+class TblLoginLogAdmin(admin.ModelAdmin):
+    list_display = ["fld_ai_id", "fld_user_id", "fld_type",
+                    "fld_app", "fld_ip_address", "fld_device", "fld_created_datetime"]
+    search_fields = ["fld_user_id__id",
+                     "fld_user_id__email", "fld_device"]
+
+
+admin.site.register(TblLoginLog, TblLoginLogAdmin)

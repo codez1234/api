@@ -82,7 +82,7 @@ admin.site.register(Article, ArticleAdmin)
 
 class TblAttendanceAdmin(admin.ModelAdmin):
     list_display = ["fld_ai_id", "fld_user_id", "fld_latitude",
-                    "fld_longitude", "fld_date", "fld_time", "fld_attendance_status"]
+                    "fld_longitude", "fld_date", "fld_time", "fld_attendance_status", "auto_check_out"]
     search_fields = ["fld_user_id__id",
                      "fld_user_id__email", "fld_date", "fld_time"]
     ordering = ('fld_ai_id', 'fld_date')
@@ -126,7 +126,7 @@ class TblSitesAdmin(admin.ModelAdmin):
 
 
 class TblUserSitesAdmin(admin.ModelAdmin):
-    list_display = ["id", "user_id", "assigned_date"]
+    list_display = ["id", "user_id", "sites", "assigned_date"]
     search_fields = ["id", "user_id__email"]
     ordering = ('id', 'assigned_date')
     # pass

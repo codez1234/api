@@ -107,6 +107,10 @@ class UserLoginView(APIView):
                 if request.data.get("device_token"):
                     user_firebase_token, created = TblUserFirebase.objects.get_or_create(
                         user_id=user, device_info=request.data.get("device_model"), firebase_id=request.data.get("device_token"))
+                    # check that
+                    if not created:
+                        user_firebase_token.is_send_push = True
+                        user_firebase_token.save()
 
                 # insert into "TblLoginLog"
                 login_log_insert, created = TblLoginLog.objects.get_or_create(
@@ -406,12 +410,12 @@ class UserTblAttendanceView(APIView):
                     "status": "error", 'message': messages.get("device_information_error")})
                 return Response({"status": "error", 'message': messages.get("device_information_error")}, status=status.HTTP_404_NOT_FOUND)
 
-        response_text_file(dir=dir, user=user_obj, value={
-            "status": "success", 'message': messages.get("data_created")})
-        return Response({"status": "success", 'message': messages.get("data_created")}, status=status.HTTP_200_OK)
-        # response_text_file(dir=dir, user=user_obj, value={"status": "success", 'message': messages.get(
-        #     "data_created"), "data": {'auto_check_out': data["auto_check_out"]}})
-        # return Response({"status": "success", 'message': messages.get("data_created"), "data": {'auto_check_out': data["auto_check_out"]}}, status=status.HTTP_200_OK)
+        # response_text_file(dir=dir, user=user_obj, value={
+        #     "status": "success", 'message': messages.get("data_created")})
+        # return Response({"status": "success", 'message': messages.get("data_created")}, status=status.HTTP_200_OK)
+        response_text_file(dir=dir, user=user_obj, value={"status": "success", 'message': messages.get(
+            "data_created"), "data": {'auto_check_out': data["auto_check_out"]}})
+        return Response({"status": "success", 'message': messages.get("data_created"), "data": {'auto_check_out': data["auto_check_out"]}}, status=status.HTTP_200_OK)
 
 
 class AttendanceLogView(APIView):
@@ -613,6 +617,11 @@ class LogoutView(APIView):
         # access_token = request.headers.get("Authorization").split(" ")[-1]
         access_token = request.headers.get("Authorization")[7:]
         obj = check_device(user.id, device_info, None)
+
+        if validate_ip_address(request.data.get('ip_address')) is None:
+            response_text_file(
+                value={"status": "error", 'message': messages.get("ip_error")}, dir=dir)
+            return Response({"status": "error", 'message': messages.get("ip_error")}, status=status.HTTP_400_BAD_REQUEST)
 
         if request.data.get("device_token"):
             user_firebase_token = TblUserFirebase.objects.filter(

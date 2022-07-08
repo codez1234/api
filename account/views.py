@@ -61,38 +61,43 @@ class UserLoginView(APIView):
         dir = "login"
         request_text_file(user=request.user,
                           value=request.data, dir=dir)
-        email_or_phone = request.data.get("email_or_phone")
+        email = request.data.get("email_or_phone")
         password = request.data.get('password')
-        email = ""
-        # print(request.data)
-        if validate_ip_address(request.data.get('ip_address')) is None:
-            response_text_file(
-                value={"status": "error", 'message': messages.get("ip_error")}, dir=dir)
-            return Response({"status": "error", 'message': messages.get("ip_error")}, status=status.HTTP_400_BAD_REQUEST)
+        # email = ""
+        # # print(request.data)
+        # if validate_ip_address(request.data.get('ip_address')) is None:
+        #     response_text_file(
+        #         value={"status": "error", 'message': messages.get("ip_error")}, dir=dir)
+        #     return Response({"status": "error", 'message': messages.get("ip_error")}, status=status.HTTP_400_BAD_REQUEST)
 
-        if isValidIMEI(int(request.data.get('imei_number'))) is False:
-            response_text_file(
-                value={"status": "error", 'message': messages.get("IMEI_error")}, dir=dir)
-            return Response({"status": "error", 'message': messages.get("IMEI_error")}, status=status.HTTP_400_BAD_REQUEST)
+        # if isValidIMEI(int(request.data.get('imei_number'))) is False:
+        #     response_text_file(
+        #         value={"status": "error", 'message': messages.get("IMEI_error")}, dir=dir)
+        #     return Response({"status": "error", 'message': messages.get("IMEI_error")}, status=status.HTTP_400_BAD_REQUEST)
 
-        if "@" in email_or_phone:
-            email = email_or_phone
-        else:
-            validate_phone_number = check_phone_number(email_or_phone)
-            user = {}
-            try:
-                user = User.objects.get(
-                    mobile=validate_phone_number)
-            except:
-                user = {}
-            if user:
-                email = user.email
-            else:
-                (email, password) = (None, None)
+        # if "@" in email_or_phone:
+        #     email = email_or_phone
+        # else:
+        #     validate_phone_number = check_phone_number(email_or_phone)
+        #     user = {}
+        #     try:
+        #         user = User.objects.get(
+        #             mobile=validate_phone_number)
+        #     except:
+        #         user = {}
+        #     if user:
+        #         email = user.email
+        #     else:
+        #         (email, password) = (None, None)
 
-        user = authenticate(email=email, password=password)
+        # user = authenticate(email=email, password=password)
+        user = User.objects.filter(email=email, password=password).last()
 
         if user is not None:
+            token = get_tokens_for_user(user)
+            response_text_file(user=user, value={"status": "success", 'message': messages.get(
+                "login_success"), "data": token}, dir=dir)
+            return Response({"status": "success", 'message': messages.get("login_success"), "data": token}, status=status.HTTP_200_OK)
             # check device model..
             obj = check_device(user.id, request.data.get(
                 'device_model'),  request.data.get('imei_number'))
@@ -125,6 +130,7 @@ class UserLoginView(APIView):
                                "status": "error", 'message': messages.get("device_information_error")}, dir=dir)
             return Response({"status": "error", 'message': messages.get("device_information_error")}, status=status.HTTP_404_NOT_FOUND)
         else:
+            print(f'jsdjlsdkjflkdsjflkjdlfkj')
             response_text_file(value={"status": "error", 'message': messages.get(
                 "wrong_email_or_phone_and_password")}, dir=dir)
             return Response({"status": "error", 'message': messages.get("wrong_email_or_phone_and_password")}, status=status.HTTP_404_NOT_FOUND)

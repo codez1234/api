@@ -102,7 +102,7 @@ else:
             'OPTIONS': {
                 'sql_mode': 'traditional',
             },
-            'NAME': 'omc',
+            'NAME': 'test_user_model',
             'USER': 'skmd',
             'PASSWORD': 'Skmd@9055',
             'HOST': 'localhost',

@@ -2,6 +2,7 @@ from django.utils import timezone
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 from django.db import models
 from database.models import TblUserLevel, TblRates
+from django.contrib.auth.hashers import make_password, check_password
 
 
 class UserManager(BaseUserManager):
@@ -18,6 +19,7 @@ class UserManager(BaseUserManager):
         if other_fields.get('is_active') is not True:
             raise ValueError(
                 'Superuser must be assigned to is_active=True.')
+        password = make_password(password)
 
         return self.create_user(email, mobile, password, **other_fields)
 
@@ -29,10 +31,15 @@ class UserManager(BaseUserManager):
         if not mobile:
             raise ValueError('User must have an phone number')
 
+        if not password:
+            raise ValueError('User must have a password')
+
         email = self.normalize_email(email)
         user = self.model(email=email,
-                          mobile=mobile, **other_fields)
-        user.set_password(password)
+                          mobile=mobile,
+                          password=password,
+                          **other_fields)
+        # user.set_password(password)
         user.save()
         return user
 

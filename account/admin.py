@@ -30,10 +30,10 @@ class UserModelAdmin(BaseUserAdmin):
 
 
 # Now register the new UserModelAdmin...
-admin.site.register(User, UserModelAdmin)
+# admin.site.register(User, UserModelAdmin)
 
 # in this case the password displayed unencrypted and also  unencrypted in database.
-# admin.site.register(User)
+admin.site.register(User)
 
 
 class TblLoginLogAdmin(admin.ModelAdmin):
